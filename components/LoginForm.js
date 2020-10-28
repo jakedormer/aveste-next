@@ -13,14 +13,22 @@ import {
 } from '@shopify/polaris';
 
 class LoginForm extends React.Component {
-  state = {
-    username: '',
-    password: ''
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      username: '',
+      password: '',
+    };
+
+    this.handle_change = this.handle_change.bind(this);
+
+  }
 
  handle_change = (field) => {
     return (value) => this.setState({ [field]: value });
   };
+
+ 
 
   render() {
     return (
@@ -32,6 +40,7 @@ class LoginForm extends React.Component {
 		        label="Email"
 		        type="email"
 		        value={this.state.username}
+            disabled={this.props.username_disabled}
 		      />
 		      <TextField
 		        name='password'
@@ -39,9 +48,10 @@ class LoginForm extends React.Component {
 		        label="Password"
 		        type="password"
 		        value={this.state.password}
+            disabled={this.props.password_disabled}
 		      />
-		      <Button primary submit>
-		        Login
+		      <Button primary={this.props.button_primary} destructive={this.props.button_destructive} submit>
+		        {this.props.in_out}
 		      </Button>
 		  </FormLayout>
       </Form>

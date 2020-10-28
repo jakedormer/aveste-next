@@ -20,44 +20,51 @@ class AnnotatedLayout extends React.Component {
   constructor(props) {
      super(props);
      this.state = {
-       displayed_form: 'login',
        enabled: false,
-       // logged_in: localStorage.getItem('token') ? true : false,
        logged_in: false,
-       username: '1'
+       username: '',
+       password: '',
      };
+
    }
 
 
   componentDidMount() {
-    console.log(localStorage.getItem('token'));
-      if (localStorage.getItem('token')) {
+    console.log(localStorage.getItem('aveste_token'));
+      if (localStorage.getItem('aveste_token')) {
         fetch('http://localhost:8000/api/current_user/', {
           method: 'GET',
           headers: {
               'Content-Type': 'application/json',
               'Accept': 'application/json',
-              'Authorization': `Token ${localStorage.getItem('token')}`
+              'Authorization': `Token ${localStorage.getItem('aveste_token')}`
             },
 
         })
 
-          // A list of promises
+        // A list of promises
 
         .then(function(response) {
 
           if (response.status == 200) {
             console.log(response.status)
 
+
             return response.json()
           }
         })
 
-
         .then(json => {
 
-            console.log(json);
+          console.log(json)
             
+
+          this.setState({
+            logged_in: true,
+            username: json.username,
+            password: ''
+          });
+
           })
 
         .catch(error => {
@@ -70,6 +77,7 @@ class AnnotatedLayout extends React.Component {
   handle_login = (e, data) => {
     console.log(data);
     console.log(JSON.stringify(data))
+    console.log(data.username)
 
     e.preventDefault();
 
@@ -88,6 +96,8 @@ class AnnotatedLayout extends React.Component {
 
           if (response.status == 200) {
             console.log(response.status)
+            console.log(JSON.stringify(data).username)
+
 
             return response.json()
           }
@@ -99,14 +109,15 @@ class AnnotatedLayout extends React.Component {
             console.log(json);
 
             const token = json.token;
-            localStorage.setItem('token', token);
+            localStorage.setItem('aveste_token', token);
 
             this.setState({
               logged_in: true,
-              username: JSON.stringify(data).username,
-              displayed_form: 'logout',
+              username: data.username,
+              password: ''
             });
 
+            
             
           })
 
@@ -115,25 +126,55 @@ class AnnotatedLayout extends React.Component {
         });
       };
 
+handle_logout = (e, data) => {
+    localStorage.removeItem('aveste_token');
 
+    this.setState({
+      logged_in: false,
+      username: '',
+    })
+  }
 
 
   render() {
     let form;
     let message;
+    let alert;
+    let alert_status;
+    let button_primary;
+    let button_destructive;
     
-    switch (this.state.displayed_form) {
-      case 'login':
+    switch (this.state.logged_in) {
+      case false:
         message = 'Your account needs to be connected in order to sell products on Aveste';
-        form = <LoginForm handle_login={this.handle_login} />;
+        form = <LoginForm 
+          handle_login={this.handle_login} 
+          in_out='Login'
+          button_primary={true}
+          button_destructive = {false} />;
+        alert = 'Please log in';
+        alert_status = 'warning';
+        button_destructive = false;
+
+
         break;
-      case 'logout':
-        message = `You are logged in ${this.username}`;
-        form = <LoginForm handle_login={this.handle_login} />;
+
+      case true:
+        message = `You are logged in as ${this.state.username}`;
+        form = <LoginForm 
+          handle_login={this.handle_logout} 
+          username={this.state.username} 
+          in_out="Logout"
+          password_disabled={true}
+          username_disabled={true}
+          button_primary={false}
+          button_destructive = {true} />;
+        alert = 'You are logged in';
+        alert_status = 'success';
+        button_primary = 'true';
+        
+
         break;
-      default:
-        message = 'You are logged in';
-        form = '<div>You are logged in</div>';
     }
 
     const enabled = this.state.enabled;
@@ -146,14 +187,14 @@ class AnnotatedLayout extends React.Component {
             <Layout>
               <Layout.AnnotatedSection
                 title="Aveste Account"
-                description={message}
+                description = 
+                <Banner title={alert} status={alert_status}>
+                  <p>{message}</p>
+                </Banner>
               >
                 <Card sectioned>
                   {form}
 
-                  <Banner title="Incorrect username or password" status="warning">
-                    <p>If you do not have an account created yet, reach out to your aveste account manager</p>
-                  </Banner>
                 </Card>
 
               </Layout.AnnotatedSection>

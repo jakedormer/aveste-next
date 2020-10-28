@@ -9,15 +9,18 @@ const img = 'https://cdn.shopify.com/s/files/1/0757/9955/files/empty-state.svg';
 
 class Index extends React.Component {
   state = { open: false };
+
+
   render() {
     return (
       <Page>
       <TitleBar
-           title=""
+           title="Aveste"
            primaryAction={{
-             content: 'Create Size Guide',
+             content: 'Sign in to Aveste',
              onAction: () => this.setState({ open: true }),
            }}
+           breadcrumbs={[{ content: "Breadcrumb" }]}
          />
       <ResourcePicker
         resourceType="Product"
@@ -30,12 +33,12 @@ class Index extends React.Component {
           <EmptyState
             heading="Start selling on Aveste Marketplace"
             action={{
-              content: 'Create a size guide',
+              content: 'Go to Account',
               onAction: () => this.setState({ open: true }),
             }}
             image={img}
           >
-            <p>Sizing is super important to us and our customers!</p>
+            <p>To get started, sign into your aveste account with your login credentials from our admin team!</p>
           </EmptyState>
         </Layout>
       </Page>
