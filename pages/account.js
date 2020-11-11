@@ -1,13 +1,16 @@
 import {
+  AccountConnection,
   Banner,
   Button,
   Card,
   Form,
   FormLayout,
+  Heading,
   Layout,
   Page,
   SettingToggle,
   Stack,
+  Subheading,
   TextField,
   TextStyle
 } from '@shopify/polaris';
@@ -48,7 +51,6 @@ class AnnotatedLayout extends React.Component {
 
           if (response.status == 200) {
             console.log(response.status)
-
 
             return response.json()
           }
@@ -181,9 +183,22 @@ handle_logout = (e, data) => {
     const contentStatus = enabled ? 'Disable' : 'Enable';
     const textStatus = enabled ? 'enabled' : 'disabled';
 
+        <p>
+          By clicking <strong>Connect</strong>, you agree to accept Aveste Marketplace's{' '}
+          <Link url="Example App">terms and conditions</Link>. You’ll pay a
+          commission rate as agreed with your Aveste account manager on sales made through Sample App.
+        </p>;
+
 
         return (
            <Page>
+           <Heading element="h1">Welcome to Aveste Marketplace</Heading>
+           <Subheading>Account</Subheading>
+
+           <Banner status="success" title="You've been approved to sell on Aveste Marketplace" onDismiss={() => {}}>
+             <p>Please continue setup</p>
+           </Banner>
+
             <Layout>
               <Layout.AnnotatedSection
                 title="Aveste Account"
@@ -215,12 +230,28 @@ handle_logout = (e, data) => {
                 </SettingToggle>
               </Layout.AnnotatedSection>
 
-              
-
               <Layout.AnnotatedSection
                 title="Terms and conditions"
                 description="You can view the Aveste Terms and Conditions here at anytime"
               >
+              </Layout.AnnotatedSection>
+              
+
+              <Layout.AnnotatedSection
+                title="Connect to Aveste"
+                description="You can view the Aveste Terms and Conditions here at anytime"
+              >
+              <AccountConnection
+                    accountName=''
+                    connected=''
+                    title="Aveste Account"
+                    action={{
+                      content: 'Connect',
+                      onAction: '',
+                    }}
+                    details=''
+                    termsOfService=''
+                  />
               </Layout.AnnotatedSection>
 
             </Layout>
