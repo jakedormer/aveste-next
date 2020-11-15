@@ -32,6 +32,13 @@ app.prepare().then(() => {
           secure: true,
           sameSite: 'none'
         });
+
+        // Store token on Aveste
+
+        
+
+        console.log("hi", accessToken)
+
         ctx.redirect('/');
       },
     }),
