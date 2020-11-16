@@ -105,39 +105,89 @@ function authenticateToken(token) {
      };
 
 
+class AccountConnectionForm extends React.Component {
 
-function AccountConnectionForm(props) {
-  const [connected, setConnected] = useState(props.logged_in);
-  const accountName = connected ? props.username : '';
-
-  // const handleAction = useCallback(() => {
-  //   setConnected(connected => !connected);
-  // }, [connected]);
-
-  const handleAction = () => {
-    if (connected) {
-      setConnected(connected => !connected)
-    } else {
-
-      openSignInWindow("http://127.0.0.1:8000/login-vendor", "_blank");
+  constructor(props) {
+      super(props);
+      this.state = {
+        logged_in:  this.props.logged_in,
+        username: this.props.username,
+      };
+      this.handleAction = this.handleAction.bind(this)
+    };
 
 
-      // setConnected(connected => !connected)
-    }
+  apiLogin(token) {
+    if (token) {
+      fetch('http://localhost:8000/api/current_user/', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Authorization': `Token ${localStorage.getItem('aveste_token')}`
+          },
+        })
+        // A list of promises
+        .then(function(response) {
+          if (response.status == 200) {
+            console.log(response.status)
+            return response.json()
+          } else {
+            console.log(response.status)
+          }
+        }).then(json => {
+          console.log(json)
+          this.setState({
+            logged_in: true,
+            username: json.username,
+          });
+        }).catch(error => {
+          console.log(error)
+        });
+    };
   }
 
-  const buttonText = connected ? 'Disconnect' : 'Connect';
-  const details = connected ? 'Account connected' : 'No account connected';
-  const terms = connected ? null : <p>
-      By clicking <strong>Connect</strong> and then logging in, you agree to accept Aveste Marketplace’s{' '}
-      <Link url="Example App" external="True">terms and conditions</Link>. You’ll pay a
-      commission rate as agreed with your Aveste account manager on sales made through Sample App.
-    </p>;
+  componentDidMount() {
+    this.apiLogin(localStorage.getItem('aveste_token'))
+  }
 
-  return <AccountConnection accountName={accountName} title="Aveste Account" action={{
-    content: buttonText,
-    onAction: handleAction
-  }} details={details} termsOfService={terms} connected={true} />;
+  handleAction() {
+    this.setState({
+      logged_in: !this.state.logged_in,
+      username: '',
+    });
+
+  }
+
+  render() {
+
+    const buttonText = this.state.logged_in ? 'Disconnect' : 'Connect';
+    const details = this.state.logged_in ? 'Account connected' : 'No account connected';
+    const terms = this.state.logged_in ? null : (
+      <p>
+        By clicking <strong>Connect</strong>, you agree to accept Aveste Marketplace's{' '}
+        <Link url="Example App">terms and conditions</Link>. You’ll pay a
+        commission rate of 15% on sales made through Sample App.
+      </p>
+    );
+
+    return (
+
+      <AccountConnection
+        accountName={this.state.username}
+        connected={this.state.logged_in}
+        title="Example App"
+        action={{
+          content: buttonText,
+          onAction: this.handleAction,
+        }}
+        details={details}
+        termsOfService={terms}
+      />
+      
+    );
+  }
 }
+
 
 export default AccountConnectionForm;

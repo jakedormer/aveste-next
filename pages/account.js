@@ -31,6 +31,8 @@ class AnnotatedLayout extends React.Component {
 
    }
 
+   
+
 
   componentDidMount() {
     console.log(localStorage.getItem('aveste_token'));

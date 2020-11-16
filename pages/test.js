@@ -33,7 +33,7 @@ class Account extends React.Component {
      this.state = {
        enabled: false,
        logged_in: false,
-       username: 'JAke',
+       username: 'Jake',
      };
   };
 
@@ -84,12 +84,6 @@ class Account extends React.Component {
 
     }
 
-  renderAccountConnection() {
-    return <AccountConnectionForm
-      logged_in={this.state.logged_in}
-      username={this.state.username}
-      />;
-  };
   
   render() {
      return (
@@ -108,7 +102,10 @@ class Account extends React.Component {
          >
            <Card sectioned>
 
-           {this.renderAccountConnection()}
+           <AccountConnectionForm 
+              logged_in={this.state.logged_in}
+              username={this.state.username}
+              />
 
            </Card>
 
