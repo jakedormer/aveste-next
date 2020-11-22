@@ -13,7 +13,8 @@ const dev = process.env.NODE_ENV !== 'production';
 const app = next({ dev });
 const handle = app.getRequestHandler();
 
-const { SHOPIFY_API_SECRET_KEY, SHOPIFY_API_KEY } = process.env;
+const { SHOPIFY_API_SECRET_KEY, SHOPIFY_API_KEY, ALLOWED_EMAIL_TOKEN } = process.env;
+const { default: graphQLProxy } = require('@shopify/koa-shopify-graphql-proxy');
 
 app.prepare().then(() => {
   const server = new Koa();
@@ -24,7 +25,7 @@ app.prepare().then(() => {
     createShopifyAuth({
       apiKey: SHOPIFY_API_KEY,
       secret: SHOPIFY_API_SECRET_KEY,
-      scopes: ['read_product_listings, write_orders'],
+      scopes: ['read_product_listings, write_orders', 'write_checkouts'],
       afterAuth(ctx) {
         const { shop, accessToken } = ctx.session;
         ctx.cookies.set('shopOrigin', shop, {
@@ -35,9 +36,32 @@ app.prepare().then(() => {
 
         // Store token on Aveste
 
-        
+          if (accessToken) {
+            fetch('http://localhost:8000/api/update_vendor/', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Accept': 'application/json',
+                  'Authorization': `Token ${ALLOWED_EMAIL_TOKEN}`
+                },
+                body: JSON.stringify({"name": shop, "api_access_token": accessToken})
+              })
+              // A list of promises
+              .then(function(response) {
+                if (response.status == 200) {
+                  console.log(response.status)
+                  return response.json()
+                } else {
+                  console.log(response.status)
+                }
+              }).then(json => {
+                console.log(json)
+              
+              }).catch(error => {
+                console.log(error)
+              });
+          };
 
-        console.log("hi", accessToken)
 
         ctx.redirect('/');
       },
@@ -45,6 +69,7 @@ app.prepare().then(() => {
   );
 
   // Koa stuff
+  server.use(graphQLProxy({version: ApiVersion.April20}))
   server.use(verifyRequest());
   server.use(async (ctx) => {
     await handle(ctx.req, ctx.res);

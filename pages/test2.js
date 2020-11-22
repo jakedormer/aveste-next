@@ -25,7 +25,7 @@ import React from 'react';
 // import ReactDOM from 'react-dom';
 import Head from 'next/head';
 import "../components/base.css";
-// import AccountConnectionForm from "../components/account_connection.js";
+import ProductCounts from "../components/product_counts.js";
 
 class Child extends React.Component {
   
@@ -38,7 +38,7 @@ class Child extends React.Component {
         <p>
           By clicking <strong>Connect</strong>, you agree to accept Aveste Marketplace's{' '}
           <Link url="Example App">terms and conditions</Link>. You’ll pay a
-          commission rate of 15% on sales made through Sample App.
+          commission rate as agreed with Aveste on sales made our marketplace.
         </p>
       );
 
@@ -70,17 +70,17 @@ class Parent extends React.Component {
        popup: false,
      };
     this.disconnect = this.disconnect.bind(this)
-    this.apiLogin = this.apiLogin.bind(this)
+    this.api = this.api.bind(this)
   }
 
-  apiLogin(token) {
+  api(token, url) {
     if (token) {
-      fetch('http://localhost:8000/api/current_user/', {
+      fetch(url, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
-            'Authorization': `Token ${localStorage.getItem('aveste_token')}`
+            'Authorization': `Token ${token}`
           },
         })
         // A list of promises
@@ -146,7 +146,7 @@ class Parent extends React.Component {
      }
 
   componentDidMount() {
-    this.apiLogin(localStorage.getItem('aveste_token'))
+    this.api(localStorage.getItem('aveste_token'), 'http://localhost:8000/api/current_user/')
 
     const receiveMessage = event => {
 
@@ -161,7 +161,7 @@ class Parent extends React.Component {
 
 
      localStorage.setItem("aveste_token", event.data)
-     this.apiLogin(localStorage.getItem('aveste_token'))
+     this.api(localStorage.getItem('aveste_token'), 'http://localhost:8000/api/current_user/')
 
       };
 
@@ -184,6 +184,7 @@ class Parent extends React.Component {
     const bannerStatus = this.state.logged_in ? 'success' : 'warning';
     const bannerText = this.state.logged_in ? 'You are logged in to Aveste' : 'Please log in';
     const onAction = this.state.logged_in ? this.disconnect : this.openSignInWindow;
+    const publishMessage = this.state.logged_in ? 'Products that are synced to Aveste or have errors are shown here' : 'Please log in';
 
     return (
 
@@ -211,6 +212,47 @@ class Parent extends React.Component {
 
     
     </Layout.AnnotatedSection>
+
+    {/*<!--Publishing-> */}
+      <Layout.AnnotatedSection
+        title="Publishing"
+        description = {publishMessage}
+      >
+
+      
+      <Card 
+         sectioned
+
+       >
+       
+
+       <ProductCounts
+        logged_in={this.state.logged_in}
+        num_products="2"
+        num_product_published="3"
+        />
+
+      </Card>
+
+      </Layout.AnnotatedSection>
+
+    {/*<!--Terms and conditions-> */}
+      <Layout.AnnotatedSection
+        title="Terms and conditions"
+        description = "Visit Aveste's terms and conditions here at anytime"
+      >
+
+      
+      <Card 
+         sectioned
+         title=""
+
+       >
+       <p>Click to read our general seller <Link url="https://google.com" external="true">terms and conditions</Link></p>
+
+      </Card>
+
+      </Layout.AnnotatedSection>
 
     </Layout>
     </Page>
