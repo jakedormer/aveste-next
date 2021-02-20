@@ -17,11 +17,11 @@ class Index extends React.Component {
       <TitleBar
            title="Aveste"
            primaryAction={{
-             content: 'Sign in to Aveste',
-             onAction: () => this.setState({ open: true }),
-           }}
-           breadcrumbs={[{ content: "Breadcrumb" }]}
-         />
+            content: 'Select products',
+            onAction: () => this.setState({ open: true }),
+          }}
+      />
+
       <ResourcePicker
         resourceType="Product"
         showVariants={false}
@@ -29,7 +29,9 @@ class Index extends React.Component {
         onSelection={(resources) => this.handleSelection(resources)}
         onCancel={() => this.setState({ open: false })}
       />
+
         <Layout>
+        
           <EmptyState
             heading="Start selling on Aveste Marketplace"
             action={{

@@ -14,6 +14,7 @@ import {
   TextField,
   TextStyle
 } from '@shopify/polaris';
+import Link from 'next/link'
 
 import LoginForm from '../components/LoginForm'
 

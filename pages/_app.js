@@ -1,3 +1,10 @@
+/*
+
+Next.js uses an App component to pass down classes to the other files in your app. This saves you from having to add imports to each file. 
+You’ll set up an _app.js file that passes down the Polaris components, styles, and everything else typically found in an index file.
+
+*/
+
 import App from 'next/app';
 import Head from 'next/head';
 import { AppProvider } from '@shopify/polaris';

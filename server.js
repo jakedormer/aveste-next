@@ -15,6 +15,7 @@ const handle = app.getRequestHandler();
 
 const { SHOPIFY_API_SECRET_KEY, SHOPIFY_API_KEY, ALLOWED_EMAIL_TOKEN } = process.env;
 const { default: graphQLProxy } = require('@shopify/koa-shopify-graphql-proxy');
+const { ApiVersion } = require('@shopify/koa-shopify-graphql-proxy');
 
 app.prepare().then(() => {
   const server = new Koa();
@@ -25,7 +26,7 @@ app.prepare().then(() => {
     createShopifyAuth({
       apiKey: SHOPIFY_API_KEY,
       secret: SHOPIFY_API_SECRET_KEY,
-      scopes: ['read_product_listings, write_orders', 'write_checkouts'],
+      scopes: ['read_product_listings,write_orders,read_shipping'],
       afterAuth(ctx) {
         const { shop, accessToken } = ctx.session;
         ctx.cookies.set('shopOrigin', shop, {
@@ -37,7 +38,7 @@ app.prepare().then(() => {
         // Store token on Aveste
 
           if (accessToken) {
-            fetch('http://localhost:8000/api/update_vendor/', {
+            fetch('http://api.aveste-test.com:8000/update_vendor/', {
                 method: 'POST',
                 headers: {
                   'Content-Type': 'application/json',
